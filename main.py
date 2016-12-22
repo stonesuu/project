@@ -2,8 +2,10 @@
 #coding=utf-8
 from flask import Flask,session,request,render_template,redirect,json
 import dbutil
-conn = dbutil.DB('spare_parts','10.1.1.7','root','root')
+conn = dbutil.DB('spare_parts','10.99.160.36','root','root')
 conn.connect()
+SN_dict = {}
+NOW_date = ''
 app = Flask(__name__)
 
 
@@ -34,6 +36,51 @@ def change(big_class):
 	elif big_class == u'电信':
 		return 'dianxin'
 
+def getSN(big_class,small_class,location,date):
+	global SN_dict
+	global NOW_date
+	big_class_sql = 'select num from big_class where name="%s"' % (big_class)
+	small_class_sql = 'select num from %s where name="%s"' % (change(big_class),small_class)
+	location_sql = 'select num from location where name="%s"' % (location)
+	big_class_num = conn.execute(big_class_sql)
+	small_class_num = conn.execute(small_class_sql)
+	location_num = conn.execute(location_sql)
+	date = str(date.decode('utf8'))
+	tmp_str = [str(big_class_num[0][0]),str(small_class_num[0][0]),str(location_num[0][0])] + date.split('-')
+	SN_ = ''.join(tmp_str)
+	print 'SN_ is %s' % SN_
+	print 'date is %s' % date
+	print 'NOW_date is %s' % NOW_date
+	if date != NOW_date:
+		SN_dict = {}
+		NOW_date = date
+		print 'new day'
+		SN_dict[SN_] = ['001']
+		SN = ''.join([SN_,'001'])
+		print SN_dict
+		print SN
+		return SN
+	else:
+		print 'old'
+		if SN_ in SN_dict:
+			last_num = int(SN_dict[SN_][-1].lstrip('0'))
+			new_num = str(last_num + 1).rjust(3,'0')
+			SN_dict[SN_].append(new_num)
+			SN = ''.join([SN_,new_num])
+			print 'old and SN_ in dict'
+			print SN_dict
+			print SN
+			return  SN
+		else:
+			SN_dict[SN_] = ['001']
+			SN = ''.join([SN_,'001'])
+			print 'old and SN_ not in dict'
+			print SN_dict
+			print SN
+			return SN
+
+
+
 @app.route('/login',methods=['GET','POST'])
 def login():
 	if 'user' in session:
@@ -47,6 +94,7 @@ def login():
 			user = request.form.get('user')
 			passwd = request.form.get('passwd')
 			sql = 'select '
+
 @app.route('/')
 def login_default():
 	return redirect('/login')
@@ -70,7 +118,7 @@ def sp_a_gp():
 @app.route('/spare_parts/add/get_table',methods=['GET','POST'])
 def sp_a_gt():
 	if request.method == 'GET':
-		sql = 'select SN,name,location,time from add_'
+		sql = 'select SN,name,location,date from add_'
 		tmp = conn.execute(sql)
 		res = json.dumps(tmp)
 		return res
@@ -79,7 +127,7 @@ def sp_a_gt():
 		small_class = request.form.get('small_class')
 		location = request.form.get('location')
 		date = request.form.get('date')
-		print big_class,small_class,location,date
+		getSN(big_class,small_class,location,date)
 		return 'ok'
 
 @app.route('/spare_parts/add/get_big_class')
