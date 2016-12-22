@@ -1,0 +1,232 @@
+{% extends 'spare_parts.html' %}
+
+{% block css%}
+#small_class {padding-top:30px;margin-bottom:0px;margin-top:20px}
+.setred {color:red}
+{% endblock %}
+
+{% block sidebar %}
+<li><a href="user.html"><i class="icon-dashboard"></i><span class="hidden-tablet"> 面板 </span></a></li>
+<li>
+	<a class="dropmenu" href="/spare_parts/main/get_page"><i class="icon-truck"></i><span class="hidden-tablet"> 备件管理 </span><span class="label label-important"> 5 </span></a>
+	<ul style="display:block">
+		<li><a class="submenu" href="/spare_parts/add/get_page"><i class="icon-truck"></i><span class="hidden-tablet"> 备件添加 </span></a></li>
+		<li><a class="submenu" href="/spare_parts/use"><i class="icon-truck"></i><span class="hidden-tablet"> 备件使用</span></a></li>
+		<li><a class="submenu" href="/spare_part/maintaince"><i class="icon-truck"></i><span class="hidden-tablet"> 备件维修 </span></a></li>
+		<li><a class="submenu" href="/spare_parts/discard"><i class="icon-truck"></i><span class="hidden-tablet"> 备件报废 </span></a></li>
+		<li class="active"><a class="submenu" href="#"><i class="icon-truck"></i><span class="hidden-tablet"> 类别设置 </span></a></li>
+	</ul>	
+</li>
+<li><a href="user.html"><i class="icon-user"></i><span class="hidden-tablet"> 用户管理 </span></a></li>	
+{% endblock %}
+
+{% block content%}
+<ul class="breadcrumb">
+	<li>
+		<i class="icon-home"></i>
+		<a href="#">Home</a> 
+		<i class="icon-angle-right"></i>
+	</li>
+	<li><a href="/spare_parts/main">Spare parts</a></li>
+	<li><i class="icon-angle-right"></i></li>
+	<li><a href="#">Spare parts Add</a></li>
+</ul>
+<div class="row-fluid sortable">
+	<div class="box span12">
+		<div class="box-header" data-original-title>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>细项设置</h2>
+			<div class="box-icon">
+				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
+			</div>
+		</div>
+		<div class="box-content">
+			<form class="form-horizontal" id="big_class">
+				<fieldset>
+				 <div class="control-group">
+					<label class="control-label" for="selectError3">大类选择</label>
+					<div class="controls">
+					  <span><select name="big_class"></select></span>
+					  <span><button type="submit" class="btn btn-primary">查询</button></span>
+					</div>
+				  </div>
+				  <div class="form-actions">
+					<!--<button type="submit" class="btn btn-primary">查询</button>-->
+				  </div>
+				</fieldset>
+			</form>
+			<form class="form-horizontal" id="small_class" method="post">
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label">添加细项</label>
+						<div class="controls">
+							<span><input class="input-xlarge focused" type="text" name="small_class"></span>
+							<span><button type="submit" class="btn btn-primary">添加</button></span>
+						</div>
+				  </div>
+				</fieldset>
+			</form>
+			<table class="table table-bordered table-striped table-condensed">
+				<thead>
+					<tr>
+					    <th>序号</th>
+					    <th>名称</th>
+					    <th>删除</th>
+					    <th>修改</th>                                          
+					    </tr>
+				</thead>   
+				<tbody id="table_show">              
+				</tbody>
+			 </table>  
+		</div>
+	</div>
+</div>
+<div class="modal hide fade" id="del_modal" data-id="">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>确认信息</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">取消</button>
+		<button class="btn btn-primary">确认</button>
+	</div>
+</div>
+<div class="modal hide fade" id="set_modal" data-id="">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>细项修改</h3>
+	</div>
+	<div class="modal-body">
+		<span><input class="input-xlarge focused" type="text" name="small_class"></span><span><p id="alert" style="color:red"></p></span>
+	</div>	
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">取消</button>
+		<button class="btn btn-primary">确认</button>
+	</div>
+</div>
+<div class="modal hide fade" id="op_result">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>确认信息</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal">确认</button>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block script%}
+<script>
+//从后台中得到大类的数据，添加到表单的内容中
+$.getJSON('/spare_parts/add/get_big_class',function(res){
+	var str=''
+	$.each(res,function(index,val){
+		str += '<option>'+val[0]+'</option>'
+	})
+	$('#big_class').find('[name="big_class"]').html(str)
+})
+//一个根据大类的内容从相应的表中获得细项并组成表的函数
+function getable(big_class){
+	var str = ''
+	$.getJSON('/spare_parts/set/get_table?big_class='+big_class,function(res){
+		$.each(res,function(index,val){
+			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td>'
+			str += '<td><button class="btn btn-small btn-danger delete-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">删除</button></td>'
+			str += '<td><button class="btn btn-small btn-primary set-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">修改</button></td></tr>'
+		})
+		$('#table_show').html(str)
+	})
+}
+//初始化大类中显示的是网络，所以初始化网络的表
+getable('网络')
+//这是随着大类的修改，从后台中找出对应的细项并组成表展示
+$('#big_class').submit(function(){
+	var big_class=$('#big_class').find('[name="big_class"]').val()
+	$('#small_class').find('input').val('')
+	getable(big_class)
+	return false
+})
+//添加细项
+$('#small_class').submit(function(){
+	var big_class=$('#big_class').find('[name="big_class"]').val()
+	$.post('/spare_parts/set/add_small_class',{big_class:big_class,small_class:$('#small_class').find('[name="small_class"]').val()},function(res){
+		if(res=='ok'){
+			$('#op_result').find('.modal-body').html('操作成功!!!')
+			$('#small_class').find('[name="small_class"]').val('')
+			$('#op_result').modal('show')
+			getable(big_class)
+		}
+		else{
+			$('#op_result').find('.modal-body').html('失败了...')
+			$('#op_result').modal('show')
+		}
+	})
+	return false
+})
+//删除细项
+$(document).on('click','.delete-btn',function(){
+	var data_content = $(this).attr('data-content')
+	var data_id = $(this).attr('data-id')
+	//console.log(data_content)
+	var str = '确认要删除'+data_content+'吗？'
+	$('#del_modal').attr('data-id',data_id)
+	$('#del_modal').find('.modal-body').html(str)
+	$('#del_modal').modal('show')
+})
+
+$('#del_modal').find('.btn-primary').on('click',function(){
+	var data_id = $('#del_modal').attr('data-id')
+	var big_class=$('#big_class').find('[name="big_class"]').val()
+	$.post('/spare_parts/set/del_small_class',{big_class:big_class,data_id:data_id},function(res){
+		if(res=='ok'){
+			$('#op_result').find('.modal-body').html('操作成功!!!')
+			$('#del_modal').modal('hide')
+			$('#op_result').modal('show')
+			getable(big_class)
+		}
+		else{
+			$('#op_result').find('.modal-body').html('失败了...')
+			$('#del_modal').modal('hide')
+			$('#op_result').modal('show')
+		}
+	})
+})
+
+//细项修改
+$(document).on('click','.set-btn',function(){
+	var data_content = $(this).attr('data-content')
+	var data_id = $(this).attr('data-id')
+	$('#set_modal').attr('data-id',data_id)
+	$('#set_modal').find('input').val(data_content)
+	$('#set_modal').modal('show')
+})
+
+$('#set_modal').find('.btn-primary').on('click',function(){
+	var data_id = $('#set_modal').attr('data-id')
+	var big_class = $('#big_class').find('[name="big_class"]').val()
+	var data_content = $('#set_modal').find('input').val()
+	if(data_content == ''){
+		$('#alert').html('还没写呢！！')
+	}
+	else{
+		$.post('/spare_parts/set/set_small_class',{data_id:data_id,big_class:big_class,data_content:data_content},function(res){
+			if(res=='ok'){
+				$('#op_result').find('.modal-body').html('操作成功!!!')
+				$('#set_modal').modal('hide')
+				$('#op_result').modal('show')
+				getable(big_class)
+			}
+			else{
+				$('#op_result').find('.modal-body').html('失败了...')
+				$('#set_modal').modal('hide')
+				$('#op_result').modal('show')
+			}
+		})
+	}
+})
+</script>
+{% endblock %}

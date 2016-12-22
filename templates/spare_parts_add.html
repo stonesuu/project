@@ -1,0 +1,260 @@
+{% extends 'spare_parts.html' %}
+
+{% block css%}
+#small_class {padding-top:30px;margin-bottom:0px;margin-top:20px}
+{% endblock %}
+
+{% block sidebar %}
+<li><a href="user.html"><i class="icon-dashboard"></i><span class="hidden-tablet"> 面板 </span></a></li>
+<li>
+	<a class="dropmenu" href="#"><i class="icon-truck"></i><span class="hidden-tablet"> 备件管理 </span><span class="label label-default"> 5 </span></a>
+	<ul style="display:block">
+		<li class="active"><a class="submenu" href="#"><i class="icon-truck"></i><span class="hidden-tablet"> 备件添加 </span></a></li>
+		<li><a class="submenu" href="/spare_parts/use"><i class="icon-truck"></i><span class="hidden-tablet"> 备件使用</span></a></li>
+		<li><a class="submenu" href="/spare_part/maintaince"><i class="icon-truck"></i><span class="hidden-tablet"> 备件维修 </span></a></li>
+		<li><a class="submenu" href="/spare_parts/discard"><i class="icon-truck"></i><span class="hidden-tablet"> 备件报废 </span></a></li>
+		<li><a class="submenu" href="/spare_parts/set/get_page"><i class="icon-truck"></i><span class="hidden-tablet"> 类别设置 </span></a></li>
+	</ul>	
+</li>
+<li><a href="user.html"><i class="icon-user"></i><span class="hidden-tablet"> 用户管理 </span></a></li>	
+{% endblock %}
+
+{% block content %}
+<ul class="breadcrumb">
+	<li>
+		<i class="icon-home"></i>
+		<a href="#">Home</a> 
+		<i class="icon-angle-right"></i>
+	</li>
+	<li><a href="/spare_parts/main">Spare parts</a></li>
+	<li><i class="icon-angle-right"></i></li>
+	<li><a href="#">Spare parts Add</a></li>
+</ul>
+<div class="row-fluid sortable">
+	<div class="box span12">
+		<div class="box-header" data-original-title>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>属性选择</h2>
+			<div class="box-icon">
+				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
+			</div>
+		</div>
+		<div class="box-content">
+			<form class="form-horizontal" id="big_class">
+				<fieldset>
+				 <div class="control-group">
+					<label class="control-label">大类选择</label>
+					<div class="controls">
+					  <select name="big_class">
+					  </select>
+					</div>
+				  </div>
+				  <div class="form-actions">
+					<button type="submit" class="btn btn-primary">确认</button>
+					<button class="btn">取消</button>
+				  </div>
+				</fieldset>
+			</form>
+			<form class="form-horizontal" action='/aaa' id="small_class">
+				<fieldset>
+				  <div class="control-group">
+					<label class="control-label">细项选择</label>
+					<div class="controls" >
+					  <select name="small_class">
+					  </select>
+					</div>
+				  </div>
+				  <div class="control-group">
+					<label class="control-label">安放位置</label>
+					<div class="controls">
+					  <select name="location">
+						<option>中心库房</option>
+						<option>1580库房</option>
+					  </select>
+					</div>
+				  </div>
+				 <div class="control-group">
+				  <label class="control-label" for="date01">日期选择</label>
+				  <div class="controls">
+					<input type="text" name="date">
+				  </div>
+				</div>
+				  <div class="form-actions">
+					<button class="btn btn-primary">确认</button>
+					<button class="btn">取消</button>
+				  </div>
+				</fieldset>
+			  </form>
+		</div>
+	</div><!--/span-->
+</div><!--/row-->
+<div class="row-fluid sortable">
+	<div class="box span12">
+		<div class="box-header" data-original-title>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>表格</h2>
+			<div class="box-icon">
+				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
+			</div>
+		</div>
+		<div class="box-content">
+			<form class="form-horizontal">
+				<fieldset>
+					 <div class="control-group">
+					<label class="control-label">生成编码</label>
+					<div class="controls">
+					  <span class="input-xlarge uneditable-input">生成编码</span>
+					</div>
+				  </div>
+				</fieldset>
+			</form>
+			<table class="table table-bordered table-striped table-condensed">
+				<thead>
+					<tr>
+					    <th>编码</th>
+					    <th>名称</th>
+					    <th>位置</th>
+					    <th>日期</th> 
+					    <th>操作</th>                                         
+					</tr>
+				</thead>   
+				<tbody id="table_show">              
+				</tbody>
+			 </table>  
+		</div>
+	</div>
+</div>
+<div class="modal hide fade" id="del_modal" data-id="">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>确认信息</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">取消</button>
+		<button class="btn btn-primary">确认</button>
+	</div>
+</div>
+<div class="modal hide fade" id="set_modal" data-id="">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>细项修改</h3>
+	</div>
+	<div class="modal-body">
+		<span><input class="input-xlarge focused" type="text" name="small_class"></span><span><p id="alert" style="color:red"></p></span>
+	</div>	
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">取消</button>
+		<button class="btn btn-primary">确认</button>
+	</div>
+</div>
+<div class="modal hide fade" id="op_result">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>确认信息</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modal">确认</button>
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+$.getJSON('/spare_parts/add/get_big_class',function(res){
+	var str=''
+	$.each(res,function(index,val){
+		str += '<option>'+val[0]+'</option>'
+	})
+	$('#big_class').find('[name="big_class"]').html(str)
+})
+
+$('#big_class').find('[name="big_class"]').val('网络')
+
+$.getJSON('/spare_parts/add/get_small_class?big_class=网络',function(res){
+	var str = ''
+	$.each(res,function(index,val){
+		str += '<option>'+val+'</option>'
+	})
+	$('#small_class').find('[name="small_class"]').html(str)
+})
+
+$('#big_class').submit(function(){
+	var big_class = $('#big_class').find('[name="big_class"]').val()
+	var  str = ''
+	$.getJSON('/spare_parts/add/get_small_class?big_class='+big_class,function(res){
+		$.each(res,function(index,val){
+			str += '<option>'+val+'</option>'
+		})
+		$('#small_class').find('[name="small_class"]').html(str)
+		//console.log(str)
+	})
+
+	return false
+})
+function getFormatDate() {
+	var mydate = new Date()
+	var year = mydate.getFullYear()
+	var mon = mydate.getMonth() + 1
+	var day = mydate.getDate()
+	var separate = '-'
+	if (mon >= 1 && mon <= 9){
+		month = '0' + month
+	}
+	if (day >=1 && day <=9){
+		day = '0' + day
+	}
+	var FormatDate = year + separate + mon + separate + day
+	return FormatDate
+	}
+
+console.log(getFormatDate())
+
+
+$('#small_class').find('[name="date"]').val(getFormatDate())
+$('#small_class').find('[name="date"]').datepicker({dateFormat:"yy-mm-dd"})
+
+function getable(){
+	var str = ''
+	$.getJSON('/spare_parts/add/get_table',function(res){
+		$.each(res,function(index,val){
+			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td>'
+			str += '<td><button class="btn btn-info" sn="'+val[0]+'" name="'+val[1]+'"><i class="halflings-icon white edit"></i></button>'
+			str += '<td><button class="btn btn-success" sn="'+val[0]+'" name="'+val[1]+'"><i class="halflings-icon white check"></i></button>'
+			str += '<td><button class="btn btn-danger" sn="'+val[0]+'" name="'+val[1]+'"><i class="halflings-icon white trash"></i></button>'
+		})
+	})
+	$('#table_show').html(str)
+}
+
+getable()
+
+$('#small_class').find('.btn-primary').on('click',function(){
+	var big_class = $('#big_class').find('[name="big_class"]').val()
+	var small_class = $('#small_class').find('[name="small_class"]').val()
+	var location = $('#small_class').find('[name="location"]').val()
+	var date = $('#small_class').find('[name="date"]').val()
+	//console.log(big_class+small_class+location+date)
+	//return false
+	$.post('/spare_parts/add/get_table',{big_class:big_class,small_class:small_class,location:location,date:date},function(res){
+		if(res='ok'){
+			$('#op_result').find('.modal-body').html('操作成功!!!')
+			$('#op_result').modal('show')
+			getable()
+		}
+		else{
+			$('#op_result').find('.modal-body').html('失败了...')
+			$('#op_result').modal('show')
+		}
+	})
+	return false
+	//console.log(big_class+small_class+location+date)
+})
+
+
+</script>
+
+{% endblock %}
