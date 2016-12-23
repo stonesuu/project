@@ -22,15 +22,19 @@ class DB():
             try:
                 self.con.close()
                 self.cursor.close()
-            except:
-                pass
+            except Exception as e:
+                print e
+                return 'error'
             try:
                 self.connect()
                 self.cursor.execute(sql)
             except Exception as e:
                 print e
-                return 'error'
-        res = self.cursor.fetchall()
+                res = 'error'
+            else:
+                res = self.cursor.fetchall()
+        else:
+            res = self.cursor.fetchall()
         #print res
         return res
             

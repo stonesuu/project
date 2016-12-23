@@ -59,7 +59,6 @@ def getSN(big_class,small_class,location,date):
 		SN = ''.join([SN_,'001'])
 		print SN_dict
 		print SN
-		return SN
 	else:
 		print 'old'
 		if SN_ in SN_dict:
@@ -70,16 +69,13 @@ def getSN(big_class,small_class,location,date):
 			print 'old and SN_ in dict'
 			print SN_dict
 			print SN
-			return  SN
 		else:
 			SN_dict[SN_] = ['001']
 			SN = ''.join([SN_,'001'])
 			print 'old and SN_ not in dict'
 			print SN_dict
 			print SN
-			return SN
-
-
+	return (SN,u'入库',location,big_class,small_class,date)
 
 @app.route('/login',methods=['GET','POST'])
 def login():
@@ -97,7 +93,7 @@ def login():
 
 @app.route('/')
 def login_default():
-	return redirect('/login')
+	return render_template('/table.html')
 
 @app.route('/spare_parts/main/get_page',methods=['GET','POST'])
 def sp_m_gp():
@@ -118,17 +114,25 @@ def sp_a_gp():
 @app.route('/spare_parts/add/get_table',methods=['GET','POST'])
 def sp_a_gt():
 	if request.method == 'GET':
-		sql = 'select SN,name,location,date from add_'
+		sql = 'select SN,location,big_class,small_class,date_format(date,"%Y-%m-%d")from add_'
 		tmp = conn.execute(sql)
 		res = json.dumps(tmp)
+		#print res
 		return res
 	elif request.method == 'POST':
 		big_class = request.form.get('big_class')
 		small_class = request.form.get('small_class')
 		location = request.form.get('location')
 		date = request.form.get('date')
-		getSN(big_class,small_class,location,date)
-		return 'ok'
+		SN_tuple = getSN(big_class,small_class,location,date)
+		main_sql = 'insert into main_ (SN,status,big_class,small_class) values ("%s","%s","%s","%s")' % (SN_tuple[0],SN_tuple[1],SN_tuple[3],SN_tuple[4])
+		add_sql = 'insert into add_ (SN,location,big_class,small_class,date) values ("%s","%s","%s","%s","%s")' % (SN_tuple[0],SN_tuple[2],SN_tuple[3],SN_tuple[4],SN_tuple[5])
+		main_res = conn.execute(main_sql)
+		add_res = conn.execute(add_sql)
+		if not (main_res and add_res):
+			return SN_tuple[0]
+		else:
+			return 'error'
 
 @app.route('/spare_parts/add/get_big_class')
 def sp_a_gbc():
