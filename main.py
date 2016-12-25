@@ -1,12 +1,33 @@
 #!/bin/env python2.7
 #coding=utf-8
 from flask import Flask,session,request,render_template,redirect,json
-import dbutil
-conn = dbutil.DB('spare_parts','10.99.160.36','root','root')
+import dbutil,time
+conn = dbutil.DB('spare_parts','127.0.0.1','root','123456')
 conn.connect()
 SN_dict = {}
-NOW_date = ''
+date_list = []
 app = Flask(__name__)
+
+def SN_dict_get(date):
+	date_list.append(date)
+	sn_get_sql = 'select SN from add_ where date_format(date,'+'"%Y-%m-%d")='
+	sn_get_sql += '"%s"' % (date)
+	sn_get_tuple = conn.execute(sn_get_sql)
+	#print sn_get_sql
+	#print '001',sn_get_tuple
+	if len(sn_get_tuple) == 0:
+		pass
+	else:
+		#print tuple(set(sn_get_tuple))
+		for tmp_SN in tuple(set(sn_get_tuple)):
+			tmp_SN_str = tmp_SN[0].encode('utf8')
+			SN_key = tmp_SN_str[:-3]
+			SN_val = int(tmp_SN_str[-3:].lstrip('0'))
+			SN_dict.setdefault(SN_key,[]).append(SN_val)
+
+#date_format = '%Y-%m-%d'
+#date = time.strftime(date_format,time.localtime())
+#SN_dict = SN_dict_get()
 
 
 def getjson(sql):
@@ -36,45 +57,44 @@ def change(big_class):
 	elif big_class == u'电信':
 		return 'dianxin'
 
-def getSN(big_class,small_class,location,date):
-	global SN_dict
-	global NOW_date
+def getSN(big_class,small_class,location,date):#由于入库时间可选，那么对选择的入库时间要查询那一天的入库序列号，防止出现重复的现象。
 	big_class_sql = 'select num from big_class where name="%s"' % (big_class)
 	small_class_sql = 'select num from %s where name="%s"' % (change(big_class),small_class)
 	location_sql = 'select num from location where name="%s"' % (location)
 	big_class_num = conn.execute(big_class_sql)
 	small_class_num = conn.execute(small_class_sql)
 	location_num = conn.execute(location_sql)
-	date = str(date.decode('utf8'))
+	date = str(date.decode('utf8'))#每次入库时，需要根据时间查看内存中是否已经有那一天的序列字典，外部将内存中序列字典的日期写成了list。
+	#print date
+	#print type(date)
 	tmp_str = [str(big_class_num[0][0]),str(small_class_num[0][0]),str(location_num[0][0])] + date.split('-')
-	SN_ = ''.join(tmp_str)
-	print 'SN_ is %s' % SN_
-	print 'date is %s' % date
-	print 'NOW_date is %s' % NOW_date
-	if date != NOW_date:
-		SN_dict = {}
-		NOW_date = date
-		print 'new day'
-		SN_dict[SN_] = ['001']
-		SN = ''.join([SN_,'001'])
+	SN_ = ''.join(tmp_str)#序列号的前缀
+	if date not in date_list:#查看插入的日期是否在list中，如果在list中，说明列表中存在那一天的序列字典
+		SN_dict_get(date)
+	if SN_ in SN_dict:#在序列字典中，序列前缀后面的list中是数字，如果要组成SN需要转换str并rjust操作后合并，序列的好处是求最大值，然后+1就是需要的新值
+		last_num = max(SN_dict[SN_])#list中如果不是数字，而是处理过后的三位字符‘001’，那么由于在SN_dict_get之后list中的顺序是无法保持的，所以用SN_dict[SN_][-1],不一定
+		new_num = last_num + 1      #是最大值，结果就错了三引号中就是原来的思路，结果导致重启程序后，某个list是['002','001'],然后产生新的值还是'002'
+		SN_dict[SN_].append(new_num)
+		SN = ''.join([SN_,str(new_num).rjust(3,'0')])
+	else:
+		SN_dict[SN_] = [1]
+		SN = ''.join([SN_,str(1).rjust(3,'0')])
+		'''
+	if SN_ in SN_dict:
+		last_num = int(SN_dict[SN_][-1].lstrip('0'))
+		new_num = str(last_num + 1).rjust(3,'0')
+		SN_dict[SN_].append(new_num)
+		SN = ''.join([SN_,new_num])
+		print 'old and SN_ in dict'
 		print SN_dict
 		print SN
 	else:
-		print 'old'
-		if SN_ in SN_dict:
-			last_num = int(SN_dict[SN_][-1].lstrip('0'))
-			new_num = str(last_num + 1).rjust(3,'0')
-			SN_dict[SN_].append(new_num)
-			SN = ''.join([SN_,new_num])
-			print 'old and SN_ in dict'
-			print SN_dict
-			print SN
-		else:
-			SN_dict[SN_] = ['001']
-			SN = ''.join([SN_,'001'])
-			print 'old and SN_ not in dict'
-			print SN_dict
-			print SN
+		SN_dict[SN_] = ['001']
+		SN = ''.join([SN_,'001'])
+		print 'old and SN_ not in dict'
+		print SN_dict
+		print SN
+	'''
 	return (SN,u'入库',location,big_class,small_class,date)
 
 @app.route('/login',methods=['GET','POST'])
@@ -129,6 +149,7 @@ def sp_a_gt():
 		add_sql = 'insert into add_ (SN,location,big_class,small_class,date) values ("%s","%s","%s","%s","%s")' % (SN_tuple[0],SN_tuple[2],SN_tuple[3],SN_tuple[4],SN_tuple[5])
 		main_res = conn.execute(main_sql)
 		add_res = conn.execute(add_sql)
+		#print SN_dict
 		if not (main_res and add_res):
 			return SN_tuple[0]
 		else:

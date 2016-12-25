@@ -37,6 +37,7 @@ class DB():
             res = self.cursor.fetchall()
         #print res
         return res
+
             
 
 
@@ -45,9 +46,7 @@ class DB():
 
 
 if __name__ == '__main__':
-    db = DB('spare_parts','10.1.1.7','root','root')
-    db.connect()
-
+    pass
 
     
                       
