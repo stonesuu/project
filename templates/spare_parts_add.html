@@ -1,7 +1,7 @@
 {% extends 'spare_parts.html' %}
 
 {% block css%}
-#small_class {padding-top:30px;margin-bottom:0px;margin-top:20px}
+
 {% endblock %}
 
 {% block sidebar %}
@@ -33,7 +33,7 @@
 <div class="row-fluid sortable">
 	<div class="box span12">
 		<div class="box-header" data-original-title>
-			<h2><i class="halflings-icon edit"></i><span class="break"></span>属性选择</h2>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>备件入库</h2>
 			<div class="box-icon">
 				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
 			</div>
@@ -48,65 +48,43 @@
 					  </select>
 					</div>
 				  </div>
-				  <div class="form-actions">
+				  <div class="form-actions form-actions-customize">
 					<button type="submit" class="btn btn-primary">确认</button>
 					<button class="btn">取消</button>
 				  </div>
 				</fieldset>
 			</form>
-			<form class="form-horizontal" action='/aaa' id="small_class">
+			<form class="form-horizontal" id="small_class">
 				<fieldset>
-				  <div class="control-group">
-					<label class="control-label">细项选择</label>
-					<div class="controls" >
-					  <select name="small_class">
-					  </select>
-					</div>
-				  </div>
-				  <div class="control-group">
-					<label class="control-label">安放位置</label>
-					<div class="controls">
-					  <select name="location">
+				    <div class="control-group">
+						<label class="control-label">细项选择</label>
+						<div class="controls" >
+					  	<select name="small_class">
+					  	</select>
+						</div>
+				    </div>
+				  	<div class="control-group">
+						<label class="control-label">安放位置</label>
+						<div class="controls">
+					  	<select name="location">
 						<option>中心库房</option>
 						<option>1580库房</option>
-					  </select>
+					  	</select>
+						</div>
+				  	</div>
+				 	<div class="control-group">
+				  		<label class="control-label" for="date01">日期选择</label>
+				  		<div class="controls">
+						<input type="text" name="date">
+				  		</div>
 					</div>
-				  </div>
-				 <div class="control-group">
-				  <label class="control-label" for="date01">日期选择</label>
-				  <div class="controls">
-					<input type="text" name="date">
-				  </div>
-				</div>
-				  <div class="form-actions">
-					<button class="btn btn-primary">确认</button>
-					<button class="btn">取消</button>
-				  </div>
-				</fieldset>
-			  </form>
-		</div>
-	</div><!--/span-->
-</div><!--/row-->
-<div class="row-fluid sortable">
-	<div class="box span12">
-		<div class="box-header" data-original-title>
-			<h2><i class="halflings-icon edit"></i><span class="break"></span>表格</h2>
-			<div class="box-icon">
-				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
-			</div>
-		</div>
-		<div class="box-content">
-			<form class="form-horizontal" id="SN">
-				<fieldset>
-					 <div class="control-group">
-					<label class="control-label">生成编码</label>
-					<div class="controls">
-					  <span class="input-xlarge uneditable-input">生成编码</span>
-					</div>
-				  </div>
+				  	<div class="form-actions form-actions-customize">
+						<button class="btn btn-primary">确认</button>
+						<button class="btn">取消</button>
+				  	</div>
 				</fieldset>
 			</form>
-			<table class="table table-striped table-bordered bootstrap-datatable">
+			   	<table class="table table-striped bootstrap-datatable ">
 				<thead>
 					<tr>
 					    <th>编码</th>
@@ -120,6 +98,140 @@
 				<tbody id="table_show">
 				</tbody>
 			 </table> 
+		</div>
+	</div><!--/span-->
+</div><!--/row-->
+<div class="row-fluid sortable">
+	<div class="box span12">
+		<div class="box-header" data-original-title>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>备件使用</h2>
+			<div class="box-icon">
+				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
+			</div>
+		</div>
+		<div class="box-content">
+			<form class="form-horizontal" id="use">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">设备编码</label>
+					<div class="controls">
+				  		<span><input class="input-xlarge focused" id="SNget" type="text" value=""></span>
+				  		<span><button class="btn btn-primary">查询</button></span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">使用位置</label>
+					<div class="controls">
+				  		<input class="input-xlarge focused" id="where2use" type="text" value="">
+					</div>
+				</div>
+				<div class="form-actions form-actions-customize">
+					<button class="btn btn-primary">确认</button>
+					<button class="btn">取消</button>
+			  	</div>
+			</fieldset>
+			</form>
+			<table class="table table-striped bootstrap-datatable">
+				<thead>
+					<tr>
+					<th>编码</th>
+					<th>大类</th>
+					<th>细项</th>
+					<th>使用位置</th>
+					<th>使用日期</th>
+					<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="table_show_use">
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="row-fluid sortable">
+	<div class="box span12">
+		<div class="box-header" data-original-title>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>备件维修</h2>
+			<div class="box-icon">
+				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
+			</div>
+		</div>
+		<div class="box-content">
+			<form class="form-horizontal" id="maint">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">设备编码</label>
+					<div class="controls">
+				  		<span><input class="input-xlarge focused" id="SNget_maint" type="text" value=""></span>
+				  		<span><button class="btn btn-primary">查询</button></span>
+					</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label">维修厂商</label>
+					<div class="controls">
+				  		<input class="input-xlarge focused" id="where2maint" type="text" value="">
+					</div>
+				</div>
+				<div class="form-actions form-actions-customize">
+					<button class="btn btn-primary">确认</button>
+					<button class="btn">取消</button>
+			  	</div>
+			</fieldset>
+			</form>
+			<table class="table table-striped bootstrap-datatable">
+				<thead>
+					<tr>
+					<th>编码</th>
+					<th>大类</th>
+					<th>细项</th>
+					<th>维修厂商</th>
+					<th>维修日期</th>
+					<th>操作</th>
+					</tr>
+				</thead>
+				<tbody id="table_show_maint">
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="row-fluid sortable">
+	<div class="box span12">
+		<div class="box-header" data-original-title>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>备件报废</h2>
+			<div class="box-icon">
+				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
+			</div>
+		</div>
+		<div class="box-content">
+			<form class="form-horizontal" id="drop">
+			<fieldset>
+				<div class="control-group">
+					<label class="control-label">设备编码</label>
+					<div class="controls">
+				  		<span><input class="input-xlarge focused" id="SNget_drop" type="text" value=""></span>
+				  		<span><button class="btn btn-primary">查询</button></span>
+					</div>
+				</div>
+				<div class="form-actions form-actions-customize">
+					<button class="btn btn-primary">确认</button>
+					<button class="btn">取消</button>
+			  	</div>
+			</fieldset>
+			</form>
+			<table class="table table-striped bootstrap-datatable">
+				<thead>
+					<tr>
+					<th>编码</th>
+					<th>大类</th>
+					<th>细项</th>
+					<th>报废日期</th>
+					</tr>
+				</thead>
+				<tbody id="table_show_drop">
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 <div class="modal hide fade" id="del_modal" data-id="">
@@ -134,17 +246,15 @@
 		<button class="btn btn-primary">确认</button>
 	</div>
 </div>
-<div class="modal hide fade" id="set_modal" data-id="">
+<div class="modal hide fade" id="use_modal" data-id="">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal">×</button>
-		<h3>细项修改</h3>
+		<h3>确认信息</h3>
 	</div>
 	<div class="modal-body">
-		<span><input class="input-xlarge focused" type="text" name="small_class"></span><span><p id="alert" style="color:red"></p></span>
-	</div>	
+	</div>
 	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal">取消</button>
-		<button class="btn btn-primary">确认</button>
+		<button class="btn btn-primary" data-dismiss="modal">确认</button>
 	</div>
 </div>
 <div class="modal hide fade" id="op_result">
@@ -160,6 +270,7 @@
 </div>
 
 
+
 {% endblock %}
 
 {% block script %}
@@ -171,9 +282,9 @@ $.getJSON('/spare_parts/add/get_big_class',function(res){
 	})
 	$('#big_class').find('[name="big_class"]').html(str)
 })
-
+//初始化大类的内容
 $('#big_class').find('[name="big_class"]').val('网络')
-
+//依据初始化大类的内容为网络来产生细项的内容
 $.getJSON('/spare_parts/add/get_small_class?big_class=网络',function(res){
 	var str = ''
 	$.each(res,function(index,val){
@@ -195,6 +306,7 @@ $('#big_class').submit(function(){
 
 	return false
 })
+//格式化时间生成函数
 function getFormatDate() {
 	var mydate = new Date()
 	var year = mydate.getFullYear()
@@ -220,31 +332,70 @@ $('#small_class').find('[name="date"]').datepicker({dateFormat:"yy-mm-dd"})
 function getable(){
 	var str = ''
 	$.getJSON('/spare_parts/add/get_table',function(res){
-		//console.log(res)
 		$.each(res,function(index,val){
-			str += '<tr class="odd"><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
-			str += '<td class="center"><button class="btn btn-small btn-info" sn="'+val[0]+'" name="'+val[1]+'">修改</button>'
-			str += '<button class="btn btn-small btn-success" sn="'+val[0]+'" name="'+val[1]+'">使用</button>'
-			str += '<button class="btn btn-small btn-danger" sn="'+val[0]+'" name="'+val[1]+'">删除</button></td></tr>'
+			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+			str += '<td><button class="btn btn-small btn-primary use-btn" sn="'+val[0]+'" location="'+val[1]+'" big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'">使用</button>'
+			str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" location="'+val[1]+'"big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'" sn_from="add">报废</button>'
+			str += '<button class="btn btn-small btn-danger delete-btn" sn="'+val[0]+'">删除</button></td></tr>'
 		})
 		$('#table_show').html(str)
 	})
 }
-
 getable()
+
+function getable_use(){
+	var str = ''
+	$.getJSON('/spare_parts/use/get_table',function(res){
+		$.each(res,function(index,val){
+			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+			str += '<td><button class="btn btn-small btn-warning maint-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'">维修</button>'
+			str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'" sn_from="use">报废</button></td></tr>'
+		})
+		$('#table_show_use').html(str)
+	})
+}
+getable_use()
+
+function getable_maint(){
+	var str = ''
+	$.getJSON('/spare_parts/maintaince/get_table',function(res){
+		$.each(res,function(index,val){
+			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+			str += '<td><button class="btn btn-small btn-success reuse-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'">修复</button>'
+			str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'" sn_from="maint">报废</button></td></tr>'
+		})
+		$('#table_show_maint').html(str)
+	})
+}
+getable_maint()
+
+function getable_drop(){
+	var str = ''
+	$.getJSON('/spare_parts/drop/get_table',function(res){
+		$.each(res,function(index,val){
+			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr>'
+		})
+		$('#table_show_drop').html(str)
+	})
+}
+getable_drop()
+
+
+function op_result(str){
+	$('#del_modal').modal('hide')
+	$('#op_result').find('.modal-body').html(str)
+	$('#op_result').modal('show')
+}
 
 $('#small_class').find('.btn-primary').on('click',function(){
 	var big_class = $('#big_class').find('[name="big_class"]').val()
 	var small_class = $('#small_class').find('[name="small_class"]').val()
 	var location = $('#small_class').find('[name="location"]').val()
 	var date = $('#small_class').find('[name="date"]').val()
-	//console.log(big_class+small_class+location+date)
-	//return false
 	$.post('/spare_parts/add/get_table',{big_class:big_class,small_class:small_class,location:location,date:date},function(res){
 		if(res !='error'){
 			$('#op_result').find('.modal-body').html('操作成功!!!')
 			$('#op_result').modal('show')
-			$('#SN').find('.uneditable-input').html(res)
 			getable()
 		}
 		else{
@@ -253,9 +404,322 @@ $('#small_class').find('.btn-primary').on('click',function(){
 		}
 	})
 	return false
-	//console.log(big_class+small_class+location+date)
+})
+//删除操作//删除操作//删除操作//删除操作//删除操作//删除操作//删除操作//删除操作//删除操作
+//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作
+$(document).on('click','.delete-btn',function(){
+	var sn = $(this).attr('sn')
+	var str = '确认要删除'+sn+'的条目吗？'
+	$('#del_modal').attr('data-id',sn)
+	$('#del_modal').attr('op','delete')
+	$('#del_modal').find('.modal-body').html(str)
+	$('#del_modal').modal('show')
+})
+$('#del_modal').find('.btn-primary').on('click',function(){
+	var op = $('#del_modal').attr('op')
+	if(op == 'delete'){
+		var sn = $('#del_modal').attr('data-id')
+		$.post('/spare_parts/add/del_sn',{sn:sn},function(res){
+			if(res == 'ok'){
+				op_result('操作成功！！')
+				getable()
+			}
+			else{
+				op_result('失败了...')
+			}
+		})
+	}
+	else if(op == 'drop'){
+		var sn = $('#del_modal').attr('data-id')
+		var sn_from = $('#del_modal').attr('sn_from')
+		$.post('/spare_parts/drop/get_table',{sn:sn,sn_from:sn_from,date:getFormatDate()},function(res){
+			if(res == 'ok'){
+				op_result('操作成功！！')
+				$('#SNget_drop').val("")
+				getable()
+				getable_use()
+				getable_maint()
+				getable_drop()
+			}
+			else{
+				op_result('失败了...')
+			}
+		})
+	}
+})
+//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作
+$(document).on('click','.use-btn',function(){
+	var sn = $(this).attr('sn')
+	var location = $(this).attr('location')
+	var big_class = $(this).attr('big_class')
+	var small_class = $(this).attr('small_class')
+	var date = $(this).attr('date')
+	$('#use').find('.controls').find('.btn-primary').attr('sn',sn)
+	$('#use').find('.controls').find('.btn-primary').attr('location',location)
+	$('#use').find('.controls').find('.btn-primary').attr('big-class',big_class)
+	$('#use').find('.controls').find('.btn-primary').attr('small-class',small_class)
+	$('#use').find('.controls').find('.btn-primary').attr('date',date)
+	$('#SNget').val(sn)
+})
+//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作
+$('#use').find('.controls').find('.btn-primary').on('click',function(){
+	var str = ""
+	if($('#SNget').val() == ""){
+		op_result('设备编码必须填写。')
+	}
+	else{
+		var sn_val = $('#SNget').val()
+		var sn_attr = $(this).attr('sn')
+		if(sn_val == sn_attr){
+			var location = $(this).attr('location')
+			var big_class = $(this).attr('big-class')
+			var small_class = $(this).attr('small-class')
+			var date = $(this).attr('date')
+			str = '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>位置</th><th>大类</th><th>细项</th><th>日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+location+'</td><td>'+big_class+'</td><td>'+small_class+'</td><td>'+date+'</td></tr></tbody></table>'
+			$('#use_modal').find('.modal-body').html(str)
+		}
+		else{
+			$.getJSON('/spare_parts/use/get_message?sn='+sn_val,function(res){
+				if(res == ''){str = "无法查询到相关信息，请确认编码准确性。"}
+				$.each(res,function(index,val){
+					str += '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>位置</th><th>大类</th><th>细项</th><th>日期</th></tr><tbody><tr><td>'+sn_val+'</td><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr></tbody></table>'
+				})
+				$('#use_modal').find('.modal-body').html(str)
+			})
+		}
+		$('#use_modal').modal('show')
+	}
+	return false
+})
+//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作//使用操作
+$('#use').find('.form-actions').find('.btn-primary').on('click',function(){
+	var sn = $('#SNget').val()
+	var where2use = $('#where2use').val()
+	if(sn == "" || where2use == ""){
+		op_result('设备编码和使用位置必须填写。')
+	}
+	else{
+		$.post('/spare_parts/use/get_table',{sn:sn,where2use:where2use,date:getFormatDate()},function(res){
+			if(res != 'error'){
+				op_result('操作成功！！')
+				$('#SNget').val("")
+				$('#where2use').val("")
+				getable_use()
+				getable()
+			}
+			else{
+				op_result('失败了...')
+			}
+		})
+	}
+	return false
+})
+//维修操作//维修操作//维修操作//维修操作//维修操作//维修操作//维修操作//维修操作//维修操作//维修操作
+$(document).on('click','.maint-btn',function(){
+	var sn = $(this).attr('sn')
+	var big_class = $(this).attr('big_class')
+	var small_class = $(this).attr('small_class')
+	var where2use = $(this).attr('where2use')
+	var use_date = $(this).attr('use_date')
+	$('#maint').find('.controls').find('.btn-primary').attr('sn',sn)
+	$('#maint').find('.controls').find('.btn-primary').attr('big-class',big_class)
+	$('#maint').find('.controls').find('.btn-primary').attr('small-class',small_class)
+	$('#maint').find('.controls').find('.btn-primary').attr('where2use',where2use)
+	$('#maint').find('.controls').find('.btn-primary').attr('use_date',use_date)
+	$('#SNget_maint').val(sn)
+})
+$('#maint').find('.controls').find('.btn-primary').on('click',function(){
+	var str = ""
+	if($('#SNget_maint').val() == ""){
+		op_result('设备编码必须填写。')
+	}
+	else{
+		var sn_val = $('#SNget_maint').val()
+		var sn_attr = $(this).attr('sn')
+		if(sn_val == sn_attr){
+			var where2use = $(this).attr('where2use')
+			var big_class = $(this).attr('big-class')
+			var small_class = $(this).attr('small-class')
+			var use_date = $(this).attr('use_date')
+			str = '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>使用位置</th><th>使用日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+big_class+'</td><td>'+small_class+'</td><td>'+where2use+'</td><td>'+use_date+'</td></tr></tbody></table>'
+			$('#use_modal').find('.modal-body').html(str)
+		}
+		else{
+			$.getJSON('/spare_parts/maintaince/get_message?sn='+sn_val,function(res){
+				if(res == ''){str = "无法查询到相关信息，请确认编码准确性。"}
+				$.each(res,function(index,val){
+					str += '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>使用位置</th><th>日期</th></tr><tbody><tr><td>'+sn_val+'</td><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr></tbody></table>'
+				})
+				$('#use_modal').find('.modal-body').html(str)
+			})
+		}
+		$('#use_modal').modal('show')
+	}
+	return false
+})
+$('#maint').find('.form-actions').find('.btn-primary').on('click',function(){
+	var sn = $('#SNget_maint').val()
+	var where2maint = $('#where2maint').val()
+	if(sn == "" || where2maint == ""){
+		op_result('设备编码和维修厂商必须填写。')
+	}
+	else{
+		$.post('/spare_parts/maintaince/get_table',{sn:sn,where2maint:where2maint,date:getFormatDate()},function(res){
+			if(res != 'error'){
+				op_result('操作成功!!')
+				$('#SNget_maint').val("")
+				$('#where2maint').val("")
+				getable_use()
+				getable_maint()
+			}
+			else{
+				op_result('失败了...')				
+			}
+		})
+	}
+	return false
+})
+$(document).on('click','.reuse-btn',function(){
+	var sn = $(this).attr('sn')
+	$.post('/spare_parts/maintaince/reuse',{sn:sn,date:getFormatDate()},function(res){
+		if(res != 'error'){
+			op_result('操作成功!!')
+			getable()
+			getable_maint()
+		}
+		else{
+			op_result('失败了...')
+		}
+	})
+})
+//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作//报废操作
+$(document).on('click','.drop-btn',function(){
+	var sn = $(this).attr('sn')
+	var big_class = $(this).attr('big_class')
+	var small_class = $(this).attr('small_class')
+	var location = $(this).attr('location')
+	var where2use = $(this).attr('where2use')
+	var where2maint = $(this).attr('where2maint')
+	var date = $(this).attr('date')
+	var use_date = $(this).attr('use_date')
+	var maint_date = $(this).attr('maint_date')
+	var sn_from = $(this).attr('sn_from')
+	$('#drop').find('.controls').find('.btn-primary').attr('sn',sn)
+	$('#drop').find('.controls').find('.btn-primary').attr('big-class',big_class)
+	$('#drop').find('.controls').find('.btn-primary').attr('small-class',small_class)
+	$('#drop').find('.controls').find('.btn-primary').attr('location',location)
+	$('#drop').find('.controls').find('.btn-primary').attr('where2maint',where2maint)
+	$('#drop').find('.controls').find('.btn-primary').attr('where2use',where2use)
+	$('#drop').find('.controls').find('.btn-primary').attr('date',date)
+	$('#drop').find('.controls').find('.btn-primary').attr('use_date',use_date)
+	$('#drop').find('.controls').find('.btn-primary').attr('maint_date',maint_date)
+	$('#drop').find('.controls').find('.btn-primary').attr('sn_from',sn_from)
+	$('#SNget_drop').val(sn)
 })
 
+$('#drop').find('.btn-primary').on('click',function(){//001
+	var str = ""
+	if($('#SNget_drop').val() == ""){
+		op_result('设备编码必须填写。')
+	}
+	else{//002
+		var sn_val = $('#SNget_drop').val()
+		var sn_attr = $(this).attr('sn')
+		console.log(sn_val)
+		console.log(sn_attr)
+		if(sn_val == sn_attr){
+			var sn_from = $(this).attr('sn_from')
+			if(sn_from == 'use'){
+				var where2use = $(this).attr('where2use')
+				var big_class = $(this).attr('big-class')
+				var small_class = $(this).attr('small-class')
+				var use_date = $(this).attr('use_date')
+				str = '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>使用位置</th><th>使用日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+big_class+'</td><td>'+small_class+'</td><td>'+where2use+'</td><td>'+use_date+'</td></tr></tbody></table>'
+				str += '<p style="color:red">这是一个使用中的备件，确认要报废此备件吗？</p>'
+				$('#del_modal').find('.modal-body').html(str)
+				$('#del_modal').attr('op','drop')
+				$('#del_modal').attr('sn_from','use')
+				$('#del_modal').attr('data-id',sn_val)
+			}
+			else if(sn_from == 'add'){
+				var big_class = $(this).attr('big-class')
+				var small_class = $(this).attr('small-class')
+				var location = $(this).attr('location')
+				var date = $(this).attr('date')
+				str = '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>库房</th><th>入库日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+big_class+'</td><td>'+small_class+'</td><td>'+location+'</td><td>'+date+'</td></tr></tbody></table>'
+				str += '<p style="color:red">这个备件还未使用，确认要报废此备件吗？</p>'
+				$('#del_modal').find('.modal-body').html(str)
+				$('#del_modal').attr('op','drop')
+				$('#del_modal').attr('sn_from','add')
+				$('#del_modal').attr('data-id',sn_val)
+			}
+			else if(sn_from == 'maint'){
+				var where2maint = $(this).attr('where2maint')
+				var big_class = $(this).attr('big-class')
+				var small_class = $(this).attr('small-class')
+				var maint_date = $(this).attr('maint_date')
+				str = '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>维修厂商</th><th>维修日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+big_class+'</td><td>'+small_class+'</td><td>'+where2maint+'</td><td>'+maint_date+'</td></tr></tbody></table>'
+				str += '<p style="color:red">确认要报废此备件吗，不能修了？</p>'
+				$('#del_modal').find('.modal-body').html(str)
+				$('#del_modal').attr('op','drop')
+				$('#del_modal').attr('sn_from','maint')
+				$('#del_modal').attr('data-id',sn_val)
+			}
+			else{
+				str = "没找到啊"
+				$('#del_modal').find('.modal-body').html(str)
+			}
+		}
+		else{//003
+			$.post('/spare_parts/drop/get_message',{sn:sn_val},function(res){//004
+				if(res == ''){str = "无法查询到相关信息，请确认编码准确性。"}
+				else if(res == 'add'){
+					$.getJSON('/spare_parts/drop/get_message?sn='+sn_val+'&status=add',function(res_add){
+						//console.log(res_add)
+						$.each(res_add,function(index,val){
+							str += '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>库房</th><th>入库日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[0]+'</td><td>'+val[3]+'</td></tr></tbody></table>'
+							str += '<p style="color:red">这个备件还未使用，确认要报废此备件吗？</p>'
+						})
+					$('#del_modal').find('.modal-body').html(str)
+					$('#del_modal').attr('op','drop')
+					$('#del_modal').attr('sn_from','add')
+					$('#del_modal').attr('data-id',sn_val)
+					})
+				}
+				else if(res == 'use'){
+					$.getJSON('/spare_parts/drop/get_message?sn='+sn_val+'&status=use',function(res_use){
+						$.each(res_use,function(index,val){
+							str = '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>使用位置</th><th>使用日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr></tbody></table>'
+							str += '<p style="color:red">这个备件正在使用中，确认要报废此备件吗？</p>'
+						})
+					$('#del_modal').find('.modal-body').html(str)
+					$('#del_modal').attr('op','drop')
+					$('#del_modal').attr('sn_from','use')
+					$('#del_modal').attr('data-id',sn_val)
+					})
+				}
+				else if(res == 'maint'){
+					$.getJSON('/spare_parts/drop/get_message?sn='+sn_val+'&status=maint',function(res_use){
+						$.each(res_use,function(index,val){
+							str = '<table class="table table-striped bootstrap-datatable "><thead><tr><th>编码</th><th>大类</th><th>细项</th><th>维修厂商</th><th>维修日期日期</th></tr></thead><tbody><tr><td>'+sn_val+'</td><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr></tbody></table>'
+							str += '<p style="color:red">确认要报废此备件吗，不能修了？</p>'
+						})
+					$('#del_modal').find('.modal-body').html(str)
+					$('#del_modal').attr('op','drop')
+					$('#del_modal').attr('sn_from','maint')
+					$('#del_modal').attr('data-id',sn_val)
+					})
+				}
+				else{
+					str = "unknow"
+					$('#del_modal').find('.modal-body').html(str)
+				}
+				})//004
+		}//003
+		$('#del_modal').modal('show')
+	}//002
+	return false
+})//001
 
 </script>
 

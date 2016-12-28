@@ -70,8 +70,7 @@
 					<tr>
 					    <th>序号</th>
 					    <th>名称</th>
-					    <th>删除</th>
-					    <th>修改</th>                                          
+					    <th>操作</th>                                          
 					    </tr>
 				</thead>   
 				<tbody id="table_show">              
@@ -87,19 +86,6 @@
 	</div>
 	<div class="modal-body">
 	</div>
-	<div class="modal-footer">
-		<button class="btn" data-dismiss="modal">取消</button>
-		<button class="btn btn-primary">确认</button>
-	</div>
-</div>
-<div class="modal hide fade" id="set_modal" data-id="">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal">×</button>
-		<h3>细项修改</h3>
-	</div>
-	<div class="modal-body">
-		<span><input class="input-xlarge focused" type="text" name="small_class"></span><span><p id="alert" style="color:red"></p></span>
-	</div>	
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal">取消</button>
 		<button class="btn btn-primary">确认</button>
@@ -135,8 +121,8 @@ function getable(big_class){
 	$.getJSON('/spare_parts/set/get_table?big_class='+big_class,function(res){
 		$.each(res,function(index,val){
 			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td>'
-			str += '<td><button class="btn btn-small btn-danger delete-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">删除</button></td>'
-			str += '<td><button class="btn btn-small btn-primary set-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">修改</button></td></tr>'
+			str += '<td><button class="btn btn-small btn-danger delete-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">删除</button></td></tr>'
+			//str += '<td><button class="btn btn-small btn-primary set-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">修改</button></td></tr>'
 		})
 		$('#table_show').html(str)
 	})
@@ -197,36 +183,37 @@ $('#del_modal').find('.btn-primary').on('click',function(){
 })
 
 //细项修改
-$(document).on('click','.set-btn',function(){
-	var data_content = $(this).attr('data-content')
-	var data_id = $(this).attr('data-id')
-	$('#set_modal').attr('data-id',data_id)
-	$('#set_modal').find('input').val(data_content)
-	$('#set_modal').modal('show')
-})
+// $(document).on('click','.set-btn',function(){
+// 	var data_content = $(this).attr('data-content')
+// 	var data_id = $(this).attr('data-id')
+// 	$('#set_modal').attr('data-id',data_id)
+// 	$('#set_modal').find('input').val(data_content)
+// 	$('#set_modal').modal('show')
+// })
 
-$('#set_modal').find('.btn-primary').on('click',function(){
-	var data_id = $('#set_modal').attr('data-id')
-	var big_class = $('#big_class').find('[name="big_class"]').val()
-	var data_content = $('#set_modal').find('input').val()
-	if(data_content == ''){
-		$('#alert').html('还没写呢！！')
-	}
-	else{
-		$.post('/spare_parts/set/set_small_class',{data_id:data_id,big_class:big_class,data_content:data_content},function(res){
-			if(res=='ok'){
-				$('#op_result').find('.modal-body').html('操作成功!!!')
-				$('#set_modal').modal('hide')
-				$('#op_result').modal('show')
-				getable(big_class)
-			}
-			else{
-				$('#op_result').find('.modal-body').html('失败了...')
-				$('#set_modal').modal('hide')
-				$('#op_result').modal('show')
-			}
-		})
-	}
-})
+// $('#set_modal').find('.btn-primary').on('click',function(){
+// 	var data_id = $('#set_modal').attr('data-id')
+// 	var big_class = $('#big_class').find('[name="big_class"]').val()
+// 	var data_content = $('#set_modal').find('input').val()
+// 	if(data_content == ''){
+// 		$('#alert').html('还没写呢！！')
+// 	}
+// 	else{
+// 		$.post('/spare_parts/set/set_small_class',{data_id:data_id,big_class:big_class,data_content:data_content},function(res){
+// 			if(res=='ok'){
+// 				$('#op_result').find('.modal-body').html('操作成功!!!')
+// 				$('#set_modal').modal('hide')
+// 				$('#op_result').modal('show')
+// 				getable(big_class)
+// 			}
+// 			else{
+// 				$('#op_result').find('.modal-body').html('失败了...')
+// 				$('#set_modal').modal('hide')
+// 				$('#op_result').modal('show')
+// 			}
+// 		})
+// 	}
+// })
+
 </script>
 {% endblock %}

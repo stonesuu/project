@@ -2,7 +2,7 @@
 #coding=utf-8
 from flask import Flask,session,request,render_template,redirect,json
 import dbutil,time
-conn = dbutil.DB('spare_parts','127.0.0.1','root','123456')
+conn = dbutil.DB('spare_parts','10.99.160.36','root','root')
 conn.connect()
 SN_dict = {}
 date_list = []
@@ -79,22 +79,6 @@ def getSN(big_class,small_class,location,date):#由于入库时间可选，那�
 	else:
 		SN_dict[SN_] = [1]
 		SN = ''.join([SN_,str(1).rjust(3,'0')])
-		'''
-	if SN_ in SN_dict:
-		last_num = int(SN_dict[SN_][-1].lstrip('0'))
-		new_num = str(last_num + 1).rjust(3,'0')
-		SN_dict[SN_].append(new_num)
-		SN = ''.join([SN_,new_num])
-		print 'old and SN_ in dict'
-		print SN_dict
-		print SN
-	else:
-		SN_dict[SN_] = ['001']
-		SN = ''.join([SN_,'001'])
-		print 'old and SN_ not in dict'
-		print SN_dict
-		print SN
-	'''
 	return (SN,u'入库',location,big_class,small_class,date)
 
 @app.route('/login',methods=['GET','POST'])
@@ -134,7 +118,7 @@ def sp_a_gp():
 @app.route('/spare_parts/add/get_table',methods=['GET','POST'])
 def sp_a_gt():
 	if request.method == 'GET':
-		sql = 'select SN,location,big_class,small_class,date_format(date,"%Y-%m-%d")from add_'
+		sql = 'select SN,location,big_class,small_class,date_format(date,"%Y-%m-%d")from add_ where used=0'
 		tmp = conn.execute(sql)
 		res = json.dumps(tmp)
 		#print res
@@ -145,12 +129,12 @@ def sp_a_gt():
 		location = request.form.get('location')
 		date = request.form.get('date')
 		SN_tuple = getSN(big_class,small_class,location,date)
-		main_sql = 'insert into main_ (SN,status,big_class,small_class) values ("%s","%s","%s","%s")' % (SN_tuple[0],SN_tuple[1],SN_tuple[3],SN_tuple[4])
+		main_sql = 'insert into main_ (SN,status,big_class,small_class,get_date) values ("%s","%s","%s","%s","%s")' % (SN_tuple[0],SN_tuple[1],SN_tuple[3],SN_tuple[4],SN_tuple[5])
 		add_sql = 'insert into add_ (SN,location,big_class,small_class,date) values ("%s","%s","%s","%s","%s")' % (SN_tuple[0],SN_tuple[2],SN_tuple[3],SN_tuple[4],SN_tuple[5])
 		main_res = conn.execute(main_sql)
 		add_res = conn.execute(add_sql)
 		#print SN_dict
-		if not (main_res and add_res):
+		if not (main_res or add_res):
 			return SN_tuple[0]
 		else:
 			return 'error'
@@ -169,6 +153,168 @@ def sp_a_gsc():
 	res = getjson(sql)
 	return res
 
+@app.route('/spare_parts/add/del_sn',methods=['POST'])
+def sp_a_ds():
+	sn = request.form.get('sn')
+	main_sql = 'delete from main_ where SN="%s"' % (sn)
+	add_sql = 'delete from add_ where SN="%s"' % (sn)
+	main_res = conn.execute(main_sql)
+	add_res = conn.execute(add_sql)
+	if not (main_res or add_res):
+		return 'ok'
+	else:
+		return 'error'
+
+@app.route('/spare_parts/use/get_message',methods=['GET'])
+def sp_u_gm():
+	sn = request.args.get('sn')
+	sql = 'select location,big_class,small_class,date_format(date,"%Y-%m-%d")'+'from add_ where SN="%s"' % (sn)
+	res = getjson(sql)
+	return res
+
+@app.route('/spare_parts/use/get_table',methods=['GET','POST'])
+def sp_u_gt():
+	if request.method == 'GET':
+		sql = 'select SN,big_class,small_class,where2use,date_format(date,"%Y-%m-%d") from use_'
+		res = getjson(sql)
+		#print res
+		return res
+	else:
+		sn = request.form.get('sn')
+		where2use = request.form.get('where2use')
+		date = request.form.get('date')
+		main_sql = 'update main_ set status="使用",use_date="%s" where SN="%s"' % (date,sn)
+		add_sql = 'update add_ set used=1 where SN="%s"' % (sn)
+		use_sql = 'insert into use_(SN,big_class,small_class,where2use,date) select SN,big_class,small_class,"%s","%s" from add_ where SN="%s"' % (where2use,date,sn)
+		main_res = conn.execute(main_sql)
+		add_res = conn.execute(add_sql)
+		use_res = conn.execute(use_sql)
+		if not (main_res or add_res or use_res):
+			return 'ok'
+		else:
+			return 'error'
+
+@app.route('/spare_parts/maintaince/get_message',methods=['GET'])
+def sp_mt_gm():
+	sn = request.args.get('sn')
+	sql = 'select big_class,small_class,where2use,date_format(date,"%Y-%m-%d")'+'from use_ where SN="%s"' % (sn)
+	res = getjson(sql)
+	return res
+
+@app.route('/spare_parts/maintaince/get_table',methods=['GET','POST'])
+def sp_mt_gt():
+	if request.method == 'GET':
+		sql = 'select SN,big_class,small_class,where2maint,date_format(date,"%Y-%m-%d") from maintaince_'
+		res = getjson(sql)
+		#print res
+		return res
+	else:
+		sn = request.form.get('sn')
+		where2maint = request.form.get('where2maint')
+		date = request.form.get('date')
+		main_sql = 'update main_ set status="维修",maint_date="%s" where SN="%s"' % (date,sn)
+		maintaince_sql = 'insert into maintaince_(SN,big_class,small_class,where2maint,date) select SN,big_class,small_class,"%s","%s" from use_ where SN="%s"' % (where2maint,date,sn)
+		use_sql = 'delete from use_ where SN="%s"' % (sn)	
+		main_res = conn.execute(main_sql)
+		maintaince_res = conn.execute(maintaince_sql)
+		use_res = conn.execute(use_sql)
+		#print '001',maintaince_res,'002',main_res,'003',use_res
+		if not (maintaince_res or main_res or use_res):
+			return 'ok'
+		else:
+			return 'error'
+@app.route('/spare_parts/maintaince/reuse',methods=['POST'])
+def sp_m_r():
+	sn = request.form.get('sn')
+	date = request.form.get('date')
+	round_get_sql = 'select count(*) from round_ where SN="%s"' % (sn)
+	round_get_res = conn.execute(round_get_sql)[0][0]
+	round_sql = 'insert into round_(SN,big_class,small_class,get_date,use_date,maint_date,round) select SN,big_class,small_class,get_date,use_date,maint_date,"%s" from main_ where SN="%s"' % (round_get_res+1,sn)
+	main_sql = 'update main_ set get_date="%s",use_date=null,maint_date=null where SN="%s"' % (date,sn)
+	add_sql = 'update add_ set date="%s",used=0 where SN="%s"' % (date,sn)
+	maintaince_sql = 'delete from maintaince_ where SN="%s"' % (sn)
+	round_res = conn.execute(round_sql)
+	main_res = conn.execute(main_sql)
+	add_res = conn.execute(add_sql)
+	maintaince_res = conn.execute(maintaince_sql)
+	if not (round_res or main_res or add_res or maintaince_res):
+		return 'ok'
+	else:
+		return 'error'
+@app.route('/spare_parts/drop/get_message',methods=['GET','POST'])
+def sp_d_gm():
+	if request.method == 'POST':
+		sn = request.form.get('sn')
+		sql = 'select status from main_ where SN="%s"' % (sn)
+		res_tuple = conn.execute(sql)
+		res = res_tuple[0][0]
+		if res == u'入库':
+			return 'add'
+		elif res == u'使用':
+			return 'use'
+		elif res == u'维修':
+			return 'maint'
+		else:
+			return 'unknow'
+	else:
+		sn = request.args.get('sn')
+		status = request.args.get('status')
+		if status == 'add':
+			sql = 'select location,big_class,small_class,date_format(date,"%Y-%m-%d")'+' from add_ where SN="%s"' % (sn)
+			res = getjson(sql)
+		elif status == 'use':
+			sql = 'select big_class,small_class,where2use,date_format(date,"%Y-%m-%d")' + ' from use_ where SN="%s"' % (sn)
+			res = getjson(sql)
+		elif status == 'maint':
+			sql = 'select big_class,small_class,where2maint,date_format(date,"%Y-%m-%d")'+' from maintaince_ where SN="%s"' % (sn)
+			res = getjson(sql)
+		return res
+
+@app.route('/spare_parts/drop/get_table',methods=['GET','POST'])
+def sp_d_gt():
+	if request.method == 'GET':
+		sql = 'select SN,big_class,small_class,date_format(date,"%Y-%m-%d") from drop_'
+		res = getjson(sql)
+		return res
+	else:
+		sn = request.form.get('sn')
+		sn_from = request.form.get('sn_from')
+		date = request.form.get('date')
+		if sn_from == 'add':
+			add_sql = 'update add_ set used=1 where SN="%s"' % (sn)
+			main_sql = 'update main_ set status="报废",drop_date="%s" where SN="%s"' % (date,sn)
+			drop_sql = 'insert into drop_(SN,big_class,small_class,date) select SN,big_class,small_class,"%s" from add_ where SN="%s"' % (date,sn)
+			add_res = conn.execute(add_sql)
+			main_res = conn.execute(main_sql)
+			drop_res = conn.execute(drop_sql)
+			if not (add_res or main_res or drop_res):
+				return 'ok'
+			else:
+				return 'error'
+		elif sn_from == 'use':
+			drop_sql = 'insert into drop_(SN,big_class,small_class,date) select SN,big_class,small_class,"%s" from use_ where SN="%s"' % (date,sn)
+			main_sql = 'update main_ set status="报废",drop_date="%s" where SN="%s"' % (date,sn)
+			use_sql = 'delete from use_ where SN="%s"' % (sn)
+			drop_res = conn.execute(drop_sql)
+			main_res = conn.execute(main_sql)
+			use_res = conn.execute(use_sql)
+			if not (drop_res or main_res or use_res):
+				return 'ok'
+			else:
+				return 'error'
+		elif sn_from == 'maint':
+			drop_sql = 'insert into drop_(SN,big_class,small_class,date) select SN,big_class,small_class,"%s" from maintaince_ where SN="%s"'  % (date,sn)
+			main_sql = 'update main_ set status="报废",drop_date="%s" where SN="%s"' % (date,sn)
+			maintaince_sql = 'delete from maintaince_ where SN="%s"' % (sn)
+			drop_res = conn.execute(drop_sql)
+			main_res = conn.execute(main_sql)
+			maintaince_res = conn.execute(maintaince_sql)
+			if not (drop_res or main_res or maintaince_res):
+				return 'ok'
+			else:
+				return 'error'
+		else:
+			return 'unknow error'
 @app.route('/spare_parts/set/get_page')
 def sp_s_gp():
 	return render_template('spare_parts_set.html')
@@ -185,7 +331,7 @@ def sp_s_asc():
 	big_class = request.form.get('big_class')
 	small_class = request.form.get('small_class')
 	sql = 'insert into %s(name) values ("%s")' % (change(big_class),small_class)
-	print sql
+	#print sql
 	res = conn.execute(sql)
 	if not res:
 		return 'ok'
