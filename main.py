@@ -104,12 +104,24 @@ def sp_m_gp():
 	if request.method == 'GET':
 		return render_template('spare_parts.html')
 
-@app.route('/spare_parts/main/get_table')
-def sp_m_gt():
-	sql = 'select name,status,provider,price,network,server,terminal,tianche,tiebao,guankong,jiankong,dianxin from main_'
-	tmp = conn.execute(sql)
-	res = json.dumps(tmp)
+@app.route('/spare_parts/dash/get_add_sta')
+def sp_d_gas():
+	sql = 'select (select count(*) from add_ where big_class="%s") as wangluo,' % (u'网络')
+	sql += '(select count(*) from add_ where big_class="%s") as fuwuqi,' % (u'服务器')
+	sql += '(select count(*) from add_ where big_class="%s") as zhongduan,' % (u'终端')
+	sql += '(select count(*) from add_ where big_class="%s") as tiebao,' % (u'铁包')
+	sql += '(select count(*) from add_ where big_class="%s") as tianche,' % (u'天车')
+	sql += '(select count(*) from add_ where big_class="%s") as guankong,' % (u'管控')
+	sql += '(select count(*) from add_ where big_class="%s") as jiankong,' % (u'监控')
+	sql += '(select count(*) from add_ where big_class="%s") as dianxin ' % (u'电信')
+	sql += 'from dual'
+	res = conn.execute(sql)
+	sta_dict = {'cata':[u'网络',u'服务器',u'终端',u'铁包',u'天车',u'管控',u'监控',u'电信'],'data':[]}
+	for num in res[0]:
+		sta_dict['data'].append(int(num))
+	res = json.dumps(sta_dict)
 	return res
+	
 
 @app.route('/spare_parts/add/get_page',methods=['GET'])
 def sp_a_gp():
@@ -359,6 +371,11 @@ def sp_s_ssc():
 		return 'ok'
 	else:
 		return 'error'
+@app.route('/test')
+def test():
+	res = {'cata':['001','002','003'],'data':[3,6,9]}
+	resjson = json.dumps(res)
+	return resjson
 
 
 if __name__ == '__main__':

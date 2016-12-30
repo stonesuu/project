@@ -33,6 +33,22 @@
 <div class="row-fluid sortable">
 	<div class="box span12">
 		<div class="box-header" data-original-title>
+			<h2><i class="halflings-icon edit"></i><span class="break"></span>图形展示</h2>
+			<div class="box-icon">
+				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
+			</div>
+		</div>
+		<div class="box-content">
+					<div id="main" style="width: 500px;height:400px;float:left;"></div>
+					<div id="main02" style="width: 500px;height:400px;float:left"></div>
+	
+
+		</div>
+	</div>
+</div>
+<div class="row-fluid sortable">
+	<div class="box span12">
+		<div class="box-header" data-original-title>
 			<h2><i class="halflings-icon edit"></i><span class="break"></span>备件入库</h2>
 			<div class="box-icon">
 				<a href="#" class="btn-minimize"><i class="halflings-icon chevron-up"></i></a>
@@ -275,6 +291,48 @@
 
 {% block script %}
 <script>
+//图标操作//图标操作//图标操作//图标操作//图标操作//图标操作//图标操作//图标操作
+var myChart = echarts.init(document.getElementById('main'))
+myChart.setOption({
+title: {
+    text: '入库设备统计'
+},
+tooltip: {},
+legend: {
+    data:['数量']
+},
+xAxis: {
+    data: []
+},
+yAxis: {},
+series: [{
+    name: '数量',
+    type: 'bar',
+    data: []
+}]
+})
+
+function getmain001(){
+	$.getJSON('/spare_parts/dash/get_add_sta',function(res){
+		console.log(res.cata)
+		console.log(res.data)
+		myChart.setOption({
+			xAxis:{data:res.cata},
+			series:[{
+				name:'数量',
+				type:'bar',
+				data:res.data
+			}]
+		})
+	})
+}
+getmain001()
+$.getJSON('/spare_parts/dash/get_add_sta',function(res){
+	console.log(res)
+})
+
+
+//获得从表中获得大类的内容
 $.getJSON('/spare_parts/add/get_big_class',function(res){
 	var str=''
 	$.each(res,function(index,val){
@@ -397,6 +455,7 @@ $('#small_class').find('.btn-primary').on('click',function(){
 			$('#op_result').find('.modal-body').html('操作成功!!!')
 			$('#op_result').modal('show')
 			getable()
+			getmain001()
 		}
 		else{
 			$('#op_result').find('.modal-body').html('失败了...')
@@ -423,6 +482,7 @@ $('#del_modal').find('.btn-primary').on('click',function(){
 			if(res == 'ok'){
 				op_result('操作成功！！')
 				getable()
+				getmain001()
 			}
 			else{
 				op_result('失败了...')
@@ -437,6 +497,7 @@ $('#del_modal').find('.btn-primary').on('click',function(){
 				op_result('操作成功！！')
 				$('#SNget_drop').val("")
 				getable()
+				getmain001()
 				getable_use()
 				getable_maint()
 				getable_drop()
@@ -506,6 +567,7 @@ $('#use').find('.form-actions').find('.btn-primary').on('click',function(){
 				$('#where2use').val("")
 				getable_use()
 				getable()
+				getmain001()
 			}
 			else{
 				op_result('失败了...')
@@ -585,6 +647,7 @@ $(document).on('click','.reuse-btn',function(){
 		if(res != 'error'){
 			op_result('操作成功!!')
 			getable()
+			getmain001()
 			getable_maint()
 		}
 		else{
