@@ -106,19 +106,55 @@ def sp_m_gp():
 
 @app.route('/spare_parts/dash/get_add_sta')
 def sp_d_gas():
-	sql = 'select (select count(*) from add_ where big_class="%s") as wangluo,' % (u'网络')
-	sql += '(select count(*) from add_ where big_class="%s") as fuwuqi,' % (u'服务器')
-	sql += '(select count(*) from add_ where big_class="%s") as zhongduan,' % (u'终端')
-	sql += '(select count(*) from add_ where big_class="%s") as tiebao,' % (u'铁包')
-	sql += '(select count(*) from add_ where big_class="%s") as tianche,' % (u'天车')
-	sql += '(select count(*) from add_ where big_class="%s") as guankong,' % (u'管控')
-	sql += '(select count(*) from add_ where big_class="%s") as jiankong,' % (u'监控')
-	sql += '(select count(*) from add_ where big_class="%s") as dianxin ' % (u'电信')
-	sql += 'from dual'
-	res = conn.execute(sql)
-	sta_dict = {'cata':[u'网络',u'服务器',u'终端',u'铁包',u'天车',u'管控',u'监控',u'电信'],'data':[]}
-	for num in res[0]:
-		sta_dict['data'].append(int(num))
+	sql_get = 'select (select count(*) from add_ where big_class="%s" and used=0) as wangluo,' % (u'网络')
+	sql_get += '(select count(*) from add_ where big_class="%s" and used=0) as fuwuqi,' % (u'服务器')
+	sql_get += '(select count(*) from add_ where big_class="%s" and used=0) as zhongduan,' % (u'终端')
+	sql_get += '(select count(*) from add_ where big_class="%s" and used=0) as tiebao,' % (u'铁包')
+	sql_get += '(select count(*) from add_ where big_class="%s" and used=0) as tianche,' % (u'天车')
+	sql_get += '(select count(*) from add_ where big_class="%s" and used=0) as guankong,' % (u'管控')
+	sql_get += '(select count(*) from add_ where big_class="%s" and used=0) as jiankong,' % (u'监控')
+	sql_get += '(select count(*) from add_ where big_class="%s" and used=0) as dianxin ' % (u'电信')
+	sql_get += 'from dual'
+	sql_use = 'select (select count(*) from use_ where big_class="%s") as wangluo,' % (u'网络')
+	sql_use += '(select count(*) from use_ where big_class="%s") as fuwuqi,' % (u'服务器')
+	sql_use += '(select count(*) from use_ where big_class="%s") as zhongduan,' % (u'终端')
+	sql_use += '(select count(*) from use_ where big_class="%s") as tiebao,' % (u'铁包')
+	sql_use += '(select count(*) from use_ where big_class="%s") as tianche,' % (u'天车')
+	sql_use += '(select count(*) from use_ where big_class="%s") as guankong,' % (u'管控')
+	sql_use += '(select count(*) from use_ where big_class="%s") as jiankong,' % (u'监控')
+	sql_use += '(select count(*) from use_ where big_class="%s") as dianxin ' % (u'电信')
+	sql_use += 'from dual'
+	sql_maint = 'select (select count(*) from maintaince_ where big_class="%s") as wangluo,' % (u'网络')
+	sql_maint += '(select count(*) from maintaince_ where big_class="%s") as fuwuqi,' % (u'服务器')
+	sql_maint += '(select count(*) from maintaince_ where big_class="%s") as zhongduan,' % (u'终端')
+	sql_maint += '(select count(*) from maintaince_ where big_class="%s") as tiebao,' % (u'铁包')
+	sql_maint += '(select count(*) from maintaince_ where big_class="%s") as tianche,' % (u'天车')
+	sql_maint += '(select count(*) from maintaince_ where big_class="%s") as guankong,' % (u'管控')
+	sql_maint += '(select count(*) from maintaince_ where big_class="%s") as jiankong,' % (u'监控')
+	sql_maint += '(select count(*) from maintaince_ where big_class="%s") as dianxin ' % (u'电信')
+	sql_maint += 'from dual'
+	sql_drop = 'select (select count(*) from drop_ where big_class="%s") as wangluo,' % (u'网络')
+	sql_drop += '(select count(*) from drop_ where big_class="%s") as fuwuqi,' % (u'服务器')
+	sql_drop += '(select count(*) from drop_ where big_class="%s") as zhongduan,' % (u'终端')
+	sql_drop += '(select count(*) from drop_ where big_class="%s") as tiebao,' % (u'铁包')
+	sql_drop += '(select count(*) from drop_ where big_class="%s") as tianche,' % (u'天车')
+	sql_drop += '(select count(*) from drop_ where big_class="%s") as guankong,' % (u'管控')
+	sql_drop += '(select count(*) from drop_ where big_class="%s") as jiankong,' % (u'监控')
+	sql_drop += '(select count(*) from drop_ where big_class="%s") as dianxin ' % (u'电信')
+	sql_drop += 'from dual'
+	res_get = conn.execute(sql_get)
+	res_use = conn.execute(sql_use)
+	res_maint = conn.execute(sql_maint)
+	res_drop = conn.execute(sql_drop)
+	sta_dict = {'cata':[u'网络',u'服务器',u'终端',u'铁包',u'天车',u'管控',u'监控',u'电信'],'data_get':[],'data_use':[],'data_maint':[],'data_drop':[]}
+	for num in res_get[0]:
+		sta_dict['data_get'].append(int(num))
+	for num in res_use[0]:
+		sta_dict['data_use'].append(int(num))
+	for num in res_maint[0]:
+		sta_dict['data_maint'].append(int(num))
+	for num in res_drop[0]:
+		sta_dict['data_drop'].append(int(num))
 	res = json.dumps(sta_dict)
 	return res
 	

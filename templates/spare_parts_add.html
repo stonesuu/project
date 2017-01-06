@@ -7,12 +7,9 @@
 {% block sidebar %}
 <li><a href="user.html"><i class="icon-dashboard"></i><span class="hidden-tablet"> 面板 </span></a></li>
 <li>
-	<a class="dropmenu" href="#"><i class="icon-truck"></i><span class="hidden-tablet"> 备件管理 </span><span class="label label-default"> 5 </span></a>
+	<a class="dropmenu" href="#"><i class="icon-truck"></i><span class="hidden-tablet"> 备件管理 </span><span class="label label-important">2</span></a>
 	<ul style="display:block">
-		<li class="active"><a class="submenu" href="#"><i class="icon-truck"></i><span class="hidden-tablet"> 备件添加 </span></a></li>
-		<li><a class="submenu" href="/spare_parts/use"><i class="icon-truck"></i><span class="hidden-tablet"> 备件使用</span></a></li>
-		<li><a class="submenu" href="/spare_part/maintaince"><i class="icon-truck"></i><span class="hidden-tablet"> 备件维修 </span></a></li>
-		<li><a class="submenu" href="/spare_parts/discard"><i class="icon-truck"></i><span class="hidden-tablet"> 备件报废 </span></a></li>
+		<li class="active"><a class="submenu" href="#"><i class="icon-truck"></i><span class="hidden-tablet"> 备件操作 </span></a></li>
 		<li><a class="submenu" href="/spare_parts/set/get_page"><i class="icon-truck"></i><span class="hidden-tablet"> 类别设置 </span></a></li>
 	</ul>	
 </li>
@@ -39,10 +36,7 @@
 			</div>
 		</div>
 		<div class="box-content">
-					<div id="main" style="width: 500px;height:400px;float:left;"></div>
-					<div id="main02" style="width: 500px;height:400px;float:left"></div>
-	
-
+					<div id="main_get" style="width: 1000px;height:400px;float:left;"></div>
 		</div>
 	</div>
 </div>
@@ -292,44 +286,40 @@
 {% block script %}
 <script>
 //图标操作//图标操作//图标操作//图标操作//图标操作//图标操作//图标操作//图标操作
-var myChart = echarts.init(document.getElementById('main'))
-myChart.setOption({
+var myChart_get = echarts.init(document.getElementById('main_get'))
+myChart_get.setOption({
 title: {
-    text: '入库设备统计'
+    text: '设备统计图'
 },
 tooltip: {},
 legend: {
-    data:['数量']
+    data:['入库','使用','维修','报废']
 },
 xAxis: {
     data: []
 },
 yAxis: {},
-series: [{
-    name: '数量',
-    type: 'bar',
-    data: []
-}]
+series: [{name: '入库',type: 'bar',data: []},
+		{name:'使用',type:'bar',data:[]},
+		{name:'维修',type:'bar',data:[]},
+		{name:'报废',type:'bar',data:[]}]
 })
-
-function getmain001(){
+function getDash_get(){
 	$.getJSON('/spare_parts/dash/get_add_sta',function(res){
-		console.log(res.cata)
-		console.log(res.data)
-		myChart.setOption({
+		myChart_get.setOption({
 			xAxis:{data:res.cata},
-			series:[{
-				name:'数量',
-				type:'bar',
-				data:res.data
-			}]
+			series:[{name:'入库',type:'bar',data:res.data_get},
+			{name:'使用',type:'bar',data:res.data_use},
+			{name:'维修',type:'bar',data:res.data_maint},
+			{name:'使用',type:'bar',data:res.data_drop}]
 		})
 	})
 }
-getmain001()
-$.getJSON('/spare_parts/dash/get_add_sta',function(res){
-	console.log(res)
-})
+getDash_get()
+
+// $.getJSON('/spare_parts/dash/get_add_sta',function(res){
+// 	console.log(res)
+// })
 
 
 //获得从表中获得大类的内容
@@ -372,7 +362,7 @@ function getFormatDate() {
 	var day = mydate.getDate()
 	var separate = '-'
 	if (mon >= 1 && mon <= 9){
-		month = '0' + month
+		mon = '0' + mon
 	}
 	if (day >=1 && day <=9){
 		day = '0' + day
@@ -438,6 +428,20 @@ function getable_drop(){
 }
 getable_drop()
 
+function getable_set(big_class){
+	var str = ''
+	$.getJSON('/spare_parts/set/get_table?big_class='+big_class,function(res){
+		$.each(res,function(index,val){
+			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td>'
+			str += '<td><button class="btn btn-small btn-danger delete-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">删除</button></td></tr>'
+			//str += '<td><button class="btn btn-small btn-primary set-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">修改</button></td></tr>'
+		})
+		$('#table_show_set').html(str)
+	})
+}
+//初始化大类中显示的是网络，所以初始化网络的表
+getable_set('网络')
+
 
 function op_result(str){
 	$('#del_modal').modal('hide')
@@ -455,7 +459,7 @@ $('#small_class').find('.btn-primary').on('click',function(){
 			$('#op_result').find('.modal-body').html('操作成功!!!')
 			$('#op_result').modal('show')
 			getable()
-			getmain001()
+			getDash_get()
 		}
 		else{
 			$('#op_result').find('.modal-body').html('失败了...')
@@ -482,7 +486,7 @@ $('#del_modal').find('.btn-primary').on('click',function(){
 			if(res == 'ok'){
 				op_result('操作成功！！')
 				getable()
-				getmain001()
+				getDash_get()
 			}
 			else{
 				op_result('失败了...')
@@ -497,7 +501,7 @@ $('#del_modal').find('.btn-primary').on('click',function(){
 				op_result('操作成功！！')
 				$('#SNget_drop').val("")
 				getable()
-				getmain001()
+				getDash_get()
 				getable_use()
 				getable_maint()
 				getable_drop()
@@ -567,7 +571,7 @@ $('#use').find('.form-actions').find('.btn-primary').on('click',function(){
 				$('#where2use').val("")
 				getable_use()
 				getable()
-				getmain001()
+				getDash_get()
 			}
 			else{
 				op_result('失败了...')
@@ -633,6 +637,7 @@ $('#maint').find('.form-actions').find('.btn-primary').on('click',function(){
 				$('#where2maint').val("")
 				getable_use()
 				getable_maint()
+				getDash_get()
 			}
 			else{
 				op_result('失败了...')				
@@ -647,7 +652,7 @@ $(document).on('click','.reuse-btn',function(){
 		if(res != 'error'){
 			op_result('操作成功!!')
 			getable()
-			getmain001()
+			getDash_get()
 			getable_maint()
 		}
 		else{
