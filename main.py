@@ -56,6 +56,26 @@ def change(big_class):
 		return 'jiankong'
 	elif big_class == u'电信':
 		return 'dianxin'
+	elif big_class == u'编码':
+		return 'SN'
+	elif big_class == u'位置':
+		return 'location'
+	elif big_class == u'大类':
+		return 'big_class'
+	elif big_class == u'细项':
+		return 'small_class'
+	elif big_class == u'日期':
+		return 'date'
+	elif big_class == u'使用日期':
+		return 'date'
+	elif big_class == u'维修日期':
+		return 'date'
+	elif big_class == u'报废日期':
+		return 'date'
+	elif big_class == u'使用位置':
+		return 'where2use'
+	elif big_class == u'维修厂商':
+		return 'where2maint'
 
 def getSN(big_class,small_class,location,date):#由于入库时间可选，那么对选择的入库时间要查询那一天的入库序列号，防止出现重复的现象。
 	big_class_sql = 'select num from big_class where name="%s"' % (big_class)
@@ -163,13 +183,25 @@ def sp_d_gas():
 def sp_a_gp():
 	return render_template('spare_parts_add.html')
 
+
 @app.route('/spare_parts/add/get_table',methods=['GET','POST'])
 def sp_a_gt():
 	if request.method == 'GET':
-		sql = 'select SN,location,big_class,small_class,date_format(date,"%Y-%m-%d")from add_ where used=0'
+		col = request.args.get('col')
+		desc = request.args.get('desc')
+		#print col,desc
+		if col == None and desc == None:
+			sql = 'select SN,location,big_class,small_class,date_format(date,"%Y-%m-%d")from add_ where used=0'
+		else:
+			if int(desc) == 0:
+				#print 'up'
+				sql = 'select SN,location,big_class,small_class,date_format(date,"%Y-%m-%d")'+'from add_ where used=0 order by %s' %(change(col),)
+			else:
+				#print 'down'
+				sql = 'select SN,location,big_class,small_class,date_format(date,"%Y-%m-%d")'+'from add_ where used=0 order by %s desc' %(change(col),)
+		#print sql			
 		tmp = conn.execute(sql)
 		res = json.dumps(tmp)
-		#print res
 		return res
 	elif request.method == 'POST':
 		big_class = request.form.get('big_class')
@@ -223,7 +255,15 @@ def sp_u_gm():
 @app.route('/spare_parts/use/get_table',methods=['GET','POST'])
 def sp_u_gt():
 	if request.method == 'GET':
-		sql = 'select SN,big_class,small_class,where2use,date_format(date,"%Y-%m-%d") from use_'
+		col = request.args.get('col')
+		desc = request.args.get('desc')
+		if col == None and desc == None:
+			sql = 'select SN,big_class,small_class,where2use,date_format(date,"%Y-%m-%d") from use_'
+		else:
+			if int(desc) == 0:
+				sql = 'select SN,big_class,small_class,where2use,date_format(date,"%Y-%m-%d") '+'from use_ order by %s' % (change(col),)
+			else:
+				sql = 'select SN,big_class,small_class,where2use,date_format(date,"%Y-%m-%d") '+'from use_ order by %s desc' % (change(col),)
 		res = getjson(sql)
 		#print res
 		return res
@@ -252,7 +292,15 @@ def sp_mt_gm():
 @app.route('/spare_parts/maintaince/get_table',methods=['GET','POST'])
 def sp_mt_gt():
 	if request.method == 'GET':
-		sql = 'select SN,big_class,small_class,where2maint,date_format(date,"%Y-%m-%d") from maintaince_'
+		col = request.args.get('col')
+		desc = request.args.get('desc')
+		if col == None and desc == None:
+			sql = 'select SN,big_class,small_class,where2maint,date_format(date,"%Y-%m-%d") from maintaince_'
+		else:
+			if int(desc) == 0:
+				sql = 'select SN,big_class,small_class,where2maint,date_format(date,"%Y-%m-%d")'+' from maintaince_ order by %s' %(change(col),)
+			else:
+				sql = 'select SN,big_class,small_class,where2maint,date_format(date,"%Y-%m-%d")'+' from maintaince_ order by %s desc' %(change(col),)	
 		res = getjson(sql)
 		#print res
 		return res
@@ -321,7 +369,15 @@ def sp_d_gm():
 @app.route('/spare_parts/drop/get_table',methods=['GET','POST'])
 def sp_d_gt():
 	if request.method == 'GET':
-		sql = 'select SN,big_class,small_class,date_format(date,"%Y-%m-%d") from drop_'
+		col = request.args.get('col')
+		desc = request.args.get('desc')
+		if col == None and desc == None:
+			sql = 'select SN,big_class,small_class,date_format(date,"%Y-%m-%d") from drop_'
+		else:
+			if int(desc) == 0:
+				sql = 'select SN,big_class,small_class,date_format(date,"%Y-%m-%d")'+' from drop_ order by %s' % (change(col),)
+			else:
+				sql = 'select SN,big_class,small_class,date_format(date,"%Y-%m-%d")'+' from drop_ order by %s desc' % (change(col),)
 		res = getjson(sql)
 		return res
 	else:

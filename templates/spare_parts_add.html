@@ -94,20 +94,32 @@
 				  	</div>
 				</fieldset>
 			</form>
-			   	<table class="table table-striped bootstrap-datatable ">
+		   	<table class="table table-striped bootstrap-datatable ">
 				<thead>
 					<tr>
-					    <th>编码</th>
-					    <th>位置</th>
-					    <th>大类</th>
-					    <th>细项</th> 
-					    <th>日期</th>
-					    <th>操作</th>                                        
-					</tr>
+					    <th>编码<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					    <th>位置<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					    <th>大类<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					    <th>细项<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th> 
+					    <th>日期<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					    <th>操作</th>
+				    </tr>
 				</thead>   
 				<tbody id="table_show">
 				</tbody>
-			 </table> 
+			</table>
+		 	<div style="float:left;margin-bottom:20px;margin-left:400px" class="page-op-add">
+				<ul class="pager">
+				    <li><a href="#" class="page-up">上一页</a></li>
+				    <span></span>
+				    <li><a href="#" class="page-down">下一页</a></li>
+				</ul> 
+			</div>
+			<div style="float:left;margin-left:300px" class="page-add">
+				  	<select name="page" style="width:50px;margin-top:20px;">
+				  	</select>
+				  	<button class="btn btn-small" style="margin-top:10px">跳转</button>
+		  	</div>
 		</div>
 	</div><!--/span-->
 </div><!--/row-->
@@ -144,11 +156,11 @@
 			<table class="table table-striped bootstrap-datatable">
 				<thead>
 					<tr>
-					<th>编码</th>
-					<th>大类</th>
-					<th>细项</th>
-					<th>使用位置</th>
-					<th>使用日期</th>
+					<th>编码<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>大类<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>细项<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>使用位置<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>使用日期<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
 					<th>操作</th>
 					</tr>
 				</thead>
@@ -191,11 +203,11 @@
 			<table class="table table-striped bootstrap-datatable">
 				<thead>
 					<tr>
-					<th>编码</th>
-					<th>大类</th>
-					<th>细项</th>
-					<th>维修厂商</th>
-					<th>维修日期</th>
+					<th>编码<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>大类<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>细项<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>维修厂商<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>维修日期<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
 					<th>操作</th>
 					</tr>
 				</thead>
@@ -232,10 +244,10 @@
 			<table class="table table-striped bootstrap-datatable">
 				<thead>
 					<tr>
-					<th>编码</th>
-					<th>大类</th>
-					<th>细项</th>
-					<th>报废日期</th>
+					<th>编码<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>大类<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>细项<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
+					<th>报废日期<button class="sort btn btn-mini btn-info"><i class="icon-sort"></i></button></th>
 					</tr>
 				</thead>
 				<tbody id="table_show_drop">
@@ -373,75 +385,106 @@ function getFormatDate() {
 
 console.log(getFormatDate())
 
-
 $('#small_class').find('[name="date"]').val(getFormatDate())
 $('#small_class').find('[name="date"]').datepicker({dateFormat:"yy-mm-dd"})
 
 function getable(){
 	var str = ''
-	$.getJSON('/spare_parts/add/get_table',function(res){
-		$.each(res,function(index,val){
-			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
-			str += '<td><button class="btn btn-small btn-primary use-btn" sn="'+val[0]+'" location="'+val[1]+'" big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'">使用</button>'
-			str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" location="'+val[1]+'"big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'" sn_from="add">报废</button>'
-			str += '<button class="btn btn-small btn-danger delete-btn" sn="'+val[0]+'">删除</button></td></tr>'
+	if(arguments.length == 0){
+		$.getJSON('/spare_parts/add/get_table',function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+				str += '<td><button class="btn btn-small btn-primary use-btn" sn="'+val[0]+'" location="'+val[1]+'" big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'">使用</button>'
+				str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" location="'+val[1]+'"big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'" sn_from="add">报废</button>'
+				str += '<button class="btn btn-small btn-danger delete-btn" sn="'+val[0]+'">删除</button></td></tr>'
+			})
+			$('#table_show').html(str)
 		})
-		$('#table_show').html(str)
-	})
+	}
+	else{
+		$.getJSON('/spare_parts/add/get_table?col='+arguments[0]+'&desc='+arguments[1],function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+				str += '<td><button class="btn btn-small btn-primary use-btn" sn="'+val[0]+'" location="'+val[1]+'" big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'">使用</button>'
+				str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" location="'+val[1]+'"big_class="'+val[2]+'" small_class="'+val[3]+'" date="'+val[4]+'" sn_from="add">报废</button>'
+				str += '<button class="btn btn-small btn-danger delete-btn" sn="'+val[0]+'">删除</button></td></tr>'
+			})
+			$('#table_show').html(str)
+		})
+	}
 }
 getable()
 
 function getable_use(){
 	var str = ''
-	$.getJSON('/spare_parts/use/get_table',function(res){
-		$.each(res,function(index,val){
-			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
-			str += '<td><button class="btn btn-small btn-warning maint-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'">维修</button>'
-			str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'" sn_from="use">报废</button></td></tr>'
+	if(arguments.length == 0){
+		$.getJSON('/spare_parts/use/get_table',function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+				str += '<td><button class="btn btn-small btn-warning maint-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'">维修</button>'
+				str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'" sn_from="use">报废</button></td></tr>'
+			})
+			$('#table_show_use').html(str)
 		})
-		$('#table_show_use').html(str)
-	})
+	}
+	else{
+		$.getJSON('/spare_parts/use/get_table?col='+arguments[0]+'&desc='+arguments[1],function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+				str += '<td><button class="btn btn-small btn-warning maint-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'">维修</button>'
+				str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2use="'+val[3]+'" use_date="'+val[4]+'" sn_from="use">报废</button></td></tr>'
+			})
+			$('#table_show_use').html(str)
+		})
+	}
 }
 getable_use()
 
 function getable_maint(){
 	var str = ''
-	$.getJSON('/spare_parts/maintaince/get_table',function(res){
-		$.each(res,function(index,val){
-			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
-			str += '<td><button class="btn btn-small btn-success reuse-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'">修复</button>'
-			str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'" sn_from="maint">报废</button></td></tr>'
+	if (arguments.length==0){
+		$.getJSON('/spare_parts/maintaince/get_table',function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+				str += '<td><button class="btn btn-small btn-success reuse-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'">修复</button>'
+				str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'" sn_from="maint">报废</button></td></tr>'
+			})
+			$('#table_show_maint').html(str)
 		})
-		$('#table_show_maint').html(str)
-	})
+	}
+	else{
+		$.getJSON('/spare_parts/maintaince/get_table?col='+arguments[0]+'&desc='+arguments[1],function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td><td>'+val[4]+'</td>'
+				str += '<td><button class="btn btn-small btn-success reuse-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'">修复</button>'
+				str += '<button class="btn btn-small drop-btn" sn="'+val[0]+'" big_class="'+val[1]+'" small_class="'+val[2]+'" where2maint="'+val[3]+'" maint_date="'+val[4]+'" sn_from="maint">报废</button></td></tr>'
+			})
+			$('#table_show_maint').html(str)
+		})
+	}
 }
 getable_maint()
 
 function getable_drop(){
 	var str = ''
-	$.getJSON('/spare_parts/drop/get_table',function(res){
-		$.each(res,function(index,val){
-			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr>'
+	if(arguments.length==0){
+		$.getJSON('/spare_parts/drop/get_table',function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr>'
+			})
+			$('#table_show_drop').html(str)
 		})
-		$('#table_show_drop').html(str)
-	})
+	}
+	else{
+		$.getJSON('/spare_parts/drop/get_table?col='+arguments[0]+'&desc='+arguments[1],function(res){
+			$.each(res,function(index,val){
+				str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td><td>'+val[2]+'</td><td>'+val[3]+'</td></tr>'
+			})
+			$('#table_show_drop').html(str)
+		})
+	}
 }
 getable_drop()
-
-function getable_set(big_class){
-	var str = ''
-	$.getJSON('/spare_parts/set/get_table?big_class='+big_class,function(res){
-		$.each(res,function(index,val){
-			str += '<tr><td>'+val[0]+'</td><td>'+val[1]+'</td>'
-			str += '<td><button class="btn btn-small btn-danger delete-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">删除</button></td></tr>'
-			//str += '<td><button class="btn btn-small btn-primary set-btn" data-id="'+val[0]+'" data-content="'+val[1]+'">修改</button></td></tr>'
-		})
-		$('#table_show_set').html(str)
-	})
-}
-//初始化大类中显示的是网络，所以初始化网络的表
-getable_set('网络')
-
 
 function op_result(str){
 	$('#del_modal').modal('hide')
@@ -788,6 +831,54 @@ $('#drop').find('.btn-primary').on('click',function(){//001
 	}//002
 	return false
 })//001
+//排序操作//排序操作//排序操作//排序操作//排序操作//排序操作//排序操作//排序操作//排序操作
+$('.sort').on('click',function(){
+	var get_str = $(this).parent().html().substring(0,4)
+	//console.log(get_str[2])
+	if(get_str[2]=='<'){
+		var col = get_str.substring(0,2)
+	}
+	else{
+		var col = get_str
+	}
+	var table = $(this).parents('thead').next().attr('id')
+	$(this).toggleClass('desc')
+	//console.log($(this).attr('class'))
+	if(table=='table_show'){
+		if($(this).hasClass('desc')){
+			getable(col,1)
+		}
+		else{
+			getable(col,0)
+		}
+	}
+	else if(table=='table_show_use'){
+		if($(this).hasClass('desc')){
+			getable_use(col,1)
+		}
+		else{
+			getable_use(col,0)
+		}
+	}
+	else if(table=='table_show_maint'){
+		if($(this).hasClass('desc')){
+			getable_maint(col,1)
+		}
+		else{
+		getable_maint(col,0)
+		}
+	}
+	else if(table=='table_show_drop'){
+		if($(this).hasClass('desc')){
+			getable_drop(col,1)
+		}
+		else{
+		getable_drop(col,0)
+		}
+	}
+})
+//分页操作//分页操作//分页操作//分页操作//分页操作//分页操作//分页操作//分页操作//分页操作//分页操作
+
 
 </script>
 
